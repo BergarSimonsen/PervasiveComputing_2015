@@ -10,6 +10,7 @@ import android.widget.Toast;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -58,7 +59,6 @@ public class MonitorActivity extends ActionBarActivity implements BeaconConsumer
             @Override
             public void didEnterRegion(Region region) {
                 Log.i(TAG, "I just saw an beacon for the first time!");
-                
                 Toast.makeText(context, "I just saw an beacon for the first time!", Toast.LENGTH_SHORT).show();
             }
 
