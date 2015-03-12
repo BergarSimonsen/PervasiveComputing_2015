@@ -22,6 +22,11 @@
             android:enabled="true"
             android:exported="true" >
         </service>
+
+        <activity
+            android:name=".monitors.AmbientMonitor"
+            android:label="@string/title_activity_ambient_monitor" >
+        </activity>
     </application>
 
 </manifest>
