@@ -1,37 +1,27 @@
 package awarephone.spct.itu.dk.awarephone.monitors;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.IBinder;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import awarephone.spct.itu.dk.awarephone.Const;
-import awarephone.spct.itu.dk.awarephone.ContextService;
-import awarephone.spct.itu.dk.awarephone.MainActivity;
-import awarephone.spct.itu.dk.awarephone.R;
 import awarephone.spct.itu.dk.awarephone.Utils;
+import awarephone.spct.itu.dk.awarephone.model.ContextEntity;
 
-public class AmbientMonitor extends BaseMonitor implements SensorEventListener  {
+public class AmbientMonitor extends Monitor implements SensorEventListener  {
 
     private static final String TAG = "AmbientMonitor";
 
     public AmbientMonitor(Context context, String sensorName, String sensorType) {
         super(context, sensorName, sensorType);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+    }
+
+    @Override
+    public ContextEntity sample() {
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override

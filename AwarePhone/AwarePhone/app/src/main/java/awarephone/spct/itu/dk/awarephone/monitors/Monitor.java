@@ -5,31 +5,19 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import java.io.Serializable;
 
 import awarephone.spct.itu.dk.awarephone.Const;
 import awarephone.spct.itu.dk.awarephone.ContextService;
 import awarephone.spct.itu.dk.awarephone.Utils;
+import awarephone.spct.itu.dk.awarephone.model.ContextEntity;
 
 /**
  * Created by bs on 3/12/15.
  */
-public class BaseMonitor {
+public abstract class Monitor {
 
     private static final String TAG = "BaseMonitor";
-
-//    public static final String SENSOR_NAME_KEY = "SensorName";
-//    public static final String SENSOR_TYPE_KEY = "SensorType";
-//    public static final String CONTEXT_KEY = "Context";
-//    public static final String SERVICE_KEY = "Service";
-//    public static final String CONTEXT_SERVICE_BOUND_KEY = "ContextServiceBound";
-//    public static final String SENSOR_MANAGER_KEY = "SensorManager";
-//    public static final String SENSOR_KEY = "Sensor";
 
     protected final String SENSOR_NAME;
     protected final String SENSOR_TYPE;
@@ -41,7 +29,7 @@ public class BaseMonitor {
 
     protected Sensor sensor;
 
-    public BaseMonitor(Context context, String sensorName, String sensorType) {
+    public Monitor(Context context, String sensorName, String sensorType) {
         this.context = context;
         this.SENSOR_NAME = sensorName;
         this.SENSOR_TYPE = sensorType;
@@ -60,17 +48,19 @@ public class BaseMonitor {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Utils.doLog(TAG, "onServiceConnected", Const.I);
             ContextService.ContextServiceBinder binder = (ContextService.ContextServiceBinder) service;
-            BaseMonitor.this.setService(binder.getService());
-            BaseMonitor.this.setContextServiceBound(true);
-            BaseMonitor.this.service.registerMonitor(BaseMonitor.this);
+            Monitor.this.setService(binder.getService());
+            Monitor.this.setContextServiceBound(true);
+            Monitor.this.service.registerMonitor(Monitor.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Utils.doLog(TAG, "onServiceDisconnected", Const.I);
-            BaseMonitor.this.setContextServiceBound(false);
+            Monitor.this.setContextServiceBound(false);
         }
     };
+
+    public abstract ContextEntity sample();
 
     public Sensor getSensor() {
         return sensor;

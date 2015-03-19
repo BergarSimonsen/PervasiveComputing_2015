@@ -1,24 +1,19 @@
 package awarephone.spct.itu.dk.awarephone;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
 
 import java.util.ArrayList;
 
-import awarephone.spct.itu.dk.awarephone.monitors.BaseMonitor;
+import awarephone.spct.itu.dk.awarephone.monitors.Monitor;
 
 public class ContextService extends Service {
 
     private static final String TAG = "ContextService";
 
-    private ArrayList<BaseMonitor> monitors;
+    private ArrayList<Monitor> monitors;
     private ContextServiceBinder binder;
 
     public ContextService() {
@@ -28,22 +23,31 @@ public class ContextService extends Service {
     public void onCreate() {
         super.onCreate();
         Utils.doLog(TAG, "onCreate", Const.I);
-        if(monitors == null) monitors = new ArrayList<BaseMonitor>();
+        if(monitors == null) monitors = new ArrayList<Monitor>();
         binder = new ContextServiceBinder();
-//        main();
+        main();
     }
 
     private void main() {
-        while(true) {
-            // TODO: Implement main loop
-        }
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    for(Monitor m : monitors) {
+                        m.sample();
+                        // TODO: complete
+                    }
+                }
+            }
+        });
+        t.start();
     }
 
-    public synchronized void registerMonitor(BaseMonitor monitor) {
+    public synchronized void registerMonitor(Monitor monitor) {
         monitors.add(monitor);
     }
 
-    public synchronized void unregisterMonitor(BaseMonitor monitor) {
+    public synchronized void unregisterMonitor(Monitor monitor) {
         monitors.remove(monitor);
     }
 
