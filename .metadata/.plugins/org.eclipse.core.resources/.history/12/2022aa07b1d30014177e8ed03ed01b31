@@ -1,0 +1,10 @@
+package dk.itu.spct.itucontextphonecloud;
+
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+
+@Path("/context")
+public class ContextRestService {
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+}

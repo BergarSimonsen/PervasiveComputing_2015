@@ -1,0 +1,6 @@
+package dk.itu.spct.itucontextphonecloud;
+
+@Path("/context")
+public class ContextRestService {
+
+}

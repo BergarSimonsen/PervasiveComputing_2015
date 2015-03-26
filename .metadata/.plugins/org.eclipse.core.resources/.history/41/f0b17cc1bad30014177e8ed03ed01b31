@@ -1,0 +1,67 @@
+package dk.itu.spct.itucontextphonecloud.persistence;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
+
+import dk.itu.spct.itucontextphonecloud.model.ContextEntity;
+
+public class DB {
+	
+	public static DB instance;
+	
+	public static DB getInstance() {
+		if(instance == null)
+			instance = new DB();
+		return instance;
+	}
+	
+	private DatastoreService dataStore;
+	
+	private DB() {
+		dataStore = DatastoreServiceFactory.getDatastoreService();
+	}
+	
+	public void insertEntity(ContextEntity entity) {
+		Entity e = new Entity(String.valueOf(entity.getId()));
+		e.setProperty("id", entity.getId());
+		e.setProperty("sensor", entity.getSensor());
+		e.setProperty("value", entity.getValue());
+		e.setProperty("type", entity.getType());
+		e.setProperty("timeStamp", entity.getTimeStamp());
+		
+		insert(e);
+	}
+	
+	public ContextEntity getEntity(long id) {
+		ContextEntity r = null;
+		Entity e = get(id);
+		if(e != null) {
+			r = new ContextEntity();
+			r.setId(e.getProperty("id"));
+		}
+	}
+	
+	private Entity get(long id) {
+		Entity retval = null;
+		try {
+			String idString = String.valueOf(id);
+			Key key = KeyFactory.stringToKey(idString);
+			retval = dataStore.get(key);
+		} catch (EntityNotFoundException e) {
+			e.printStackTrace();
+		}
+		return retval;
+	}
+	
+	private void insert(Entity entity) {
+		dataStore.put(entity);
+	}
+
+}
