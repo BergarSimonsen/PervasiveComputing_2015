@@ -22,7 +22,5 @@ public class Response {
 	
 	public int getDataCount() { return data.size(); }
 
-	public void setDataCount(int dataCount) {
-		return;
-	}
+	public void setDataCount(int dataCount) { return; }
 }

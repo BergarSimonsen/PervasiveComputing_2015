@@ -61,9 +61,15 @@ public class ContextService extends Service {
             @Override
             public void run() {
                 while(true) {
-                    for(ContextMonitor m : monitors) {
-                        m.sample();
-                        // TODO: complete
+                    try {
+                        Thread.sleep(Const.THREAD_SLEEP);
+                        for(ContextMonitor m : monitors) {
+                            m.sample();
+                            // TODO: complete
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        Utils.doLog(TAG, e.getMessage(), Const.ERROR);
                     }
                 }
             }

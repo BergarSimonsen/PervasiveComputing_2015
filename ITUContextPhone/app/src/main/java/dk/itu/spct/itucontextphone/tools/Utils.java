@@ -8,6 +8,8 @@ import android.location.LocationManager;
 import android.provider.Settings;
 import android.util.Log;
 
+import dk.itu.spct.itucontextphone.R;
+
 /**
  * Created by bs on 3/21/15.
  */
@@ -93,5 +95,25 @@ public class Utils {
             }
         });
         dialog.show();
+    }
+
+    /**
+     * Convert response codes from web service to textual representation
+     * @param code
+     * @return string representation of code.
+     */
+    public static String responseCodeToString(int code) {
+        switch(code) {
+            case Const.RESPONSE_SUCCESS:
+                return "Success";
+            case Const.RESPONSE_ERROR:
+                return "Error";
+            case Const.RESPONSE_EXISTS:
+                return "Entity already exists";
+            case Const.RESPONSE_NOT_FOUND:
+                return "Entity not found";
+            default:
+                return "Unknown error";
+        }
     }
 }
