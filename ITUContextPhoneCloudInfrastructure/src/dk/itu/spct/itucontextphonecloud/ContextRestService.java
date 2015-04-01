@@ -8,50 +8,49 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import dk.itu.spct.itucontextphonecloud.controller.DBController;
+import dk.itu.spct.itucontextphonecloud.io.Response;
 import dk.itu.spct.itucontextphonecloud.model.ContextEntity;
 import dk.itu.spct.itucontextphonecloud.model.ContextEntityList;
-import dk.itu.spct.itucontextphonecloud.persistence.DB;
 
 @Path("/context")
 public class ContextRestService {
 	
-	private DB db;
+	private DBController dbc;
+	
+	private void init() { dbc = new DBController(); }
 	
 	@GET
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ContextEntity getEntity(@PathParam("id") long id) {
-		db = DB.getInstance();
-		return db.getContextEntity(id);
+	public Response getEntity(@PathParam("id") long id) {
+		init();
+		return dbc.getContextEntity(id);
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ContextEntityList getAllEntities() {
-		db = DB.getInstance();
-		return db.getContextEntities();
+	public Response getAllEntities() {
+		init();
+		return dbc.getContextEntities();
 	}
 	
 	@POST
+	@Path("/single")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String addEntity(ContextEntity entity) {
-		String s = "";
-		db = DB.getInstance();
-		db.insertContextEntity(entity);
-		ContextEntity e = db.getContextEntity(entity.getId());
-		if(e == null)
-			s = "entity is null!!!";
-		else 
-			s = e.toString();
-		return s;
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addEntity(ContextEntity entity) {
+		init();
+		dbc.insertContextEntity(entity);
+		return dbc.getContextEntity(entity.getId());
 	}
 	
 	@POST
+	@Path("/list")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void addEntities(ContextEntityList list) {
-		db = DB.getInstance();
-		for(ContextEntity e : list) {
-			db.insertContextEntity(e);
-		}
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addEntities(ContextEntityList list) {
+		init();
+		return dbc.insertContextEntities(list);
 	}
 }

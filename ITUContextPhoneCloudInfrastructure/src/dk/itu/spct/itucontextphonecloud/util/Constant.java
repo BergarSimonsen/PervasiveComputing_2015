@@ -9,5 +9,11 @@ public class Constant {
 	public final static String VALUE 			= "value";
 	public final static String TYPE 			= "type";
 	public final static String TIMESTAMP 		= "timeStamp";
+	
+	// Response codes
+	public final static int RESPONSE_SUCCESS	= 0;
+	public final static int RESPONSE_ERROR		= 1;
+	public final static int RESPONSE_EXISTS		= 2;
+	public final static int RESPONSE_NOT_FOUND	= 3;
 
 }

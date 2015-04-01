@@ -14,36 +14,34 @@ import dk.itu.spct.itucontextphonecloud.model.ContextEntityList;
 import dk.itu.spct.itucontextphonecloud.util.Constant;
 
 public class DB {
-	
-	
-	
+
 	private static DB instance;
-	
+
 	public static DB getInstance() {
 		if(instance == null)
 			instance = new DB();
 		return instance;
 	}
-	
+
 	private DatastoreService dataStore;
-	
+
 	private DB() {
 		dataStore = DatastoreServiceFactory.getDatastoreService();
 	}
-	
+
 	/**
 	 * Generates a key from the kind and id.
 	 */
 	private Key generateKey(String kind, long id) {
 		return KeyFactory.createKey(kind, id);
 	}
-	
+
 	public ContextEntityList getContextEntities() {
 		ContextEntityList list = new ContextEntityList();
-		
+
 		Query query = new Query(Constant.CONTEXT_ENTITY);
 		PreparedQuery pq = dataStore.prepare(query);
-		
+
 		for(Entity e : pq.asIterable()) {
 			ContextEntity ce = new ContextEntity();
 			ce.setId(Long.valueOf(e.getProperty(Constant.ID).toString()));
@@ -51,13 +49,13 @@ public class DB {
 			ce.setTimeStamp(Long.valueOf(e.getProperty(Constant.TIMESTAMP).toString()));
 			ce.setType(e.getProperty(Constant.TYPE).toString());
 			ce.setValue(e.getProperty(Constant.VALUE).toString());
-			
+
 			list.add(ce);
 		}
-		
+
 		return list;
 	}
-	
+
 	public ContextEntity getContextEntity(long id) {
 		ContextEntity r = null;
 		Entity e = getEntity(id);
@@ -71,7 +69,27 @@ public class DB {
 		}
 		return r;
 	}
+
+	public int insertContextEntity(ContextEntity entity) {
+		//		Key k = generateKey(Constant.CONTEXT_ENTITY, entity.getId());
+
+		Entity e = new Entity(Constant.CONTEXT_ENTITY, entity.getId());
+
+		e.setProperty(Constant.ID, entity.getId());
+		e.setProperty(Constant.SENSOR, entity.getSensor());
+		e.setProperty(Constant.VALUE, entity.getValue());
+		e.setProperty(Constant.TYPE, entity.getType());
+		e.setProperty(Constant.TIMESTAMP, entity.getTimeStamp());
+
+		return insertEntity(e);
+	}
 	
+	public int deleteContextEntity(long id) {
+		Key k = generateKey(Constant.CONTEXT_ENTITY, id);
+		return deleteEntity(k);
+	}
+
+	// Private "raw" db crud methods
 	private Entity getEntity(long id) {
 		Entity retval = null;
 		try {
@@ -84,32 +102,21 @@ public class DB {
 		return retval;
 	}
 	
-	public void insertContextEntity(ContextEntity entity) {
-//		Key k = generateKey(Constant.CONTEXT_ENTITY, entity.getId());
-		
-//		Entity e = new Entity(Constant.CONTEXT_ENTITY, k);
-		Entity e = new Entity(Constant.CONTEXT_ENTITY, entity.getId());
-		
-		e.setProperty(Constant.ID, entity.getId());
-		e.setProperty(Constant.SENSOR, entity.getSensor());
-		e.setProperty(Constant.VALUE, entity.getValue());
-		e.setProperty(Constant.TYPE, entity.getType());
-		e.setProperty(Constant.TIMESTAMP, entity.getTimeStamp());
-		
-		insertEntity(e);
+	private int insertEntity(Entity entity) {
+		try {
+			dataStore.put(entity);
+			return Constant.RESPONSE_SUCCESS;
+		} catch (Exception e) {
+			return Constant.RESPONSE_ERROR;
+		}
 	}
-	
-	private void insertEntity(Entity entity) {
-		dataStore.put(entity);
-		System.out.println("DB: Entity inserted!");
-	}
-	
-	public void deleteContextEntity(long id) {
-		Key k = generateKey(Constant.CONTEXT_ENTITY, id);
-		deleteEntity(k);
-	}
-	
-	private void deleteEntity(Key key) {
-		dataStore.delete(key);
+
+	private int deleteEntity(Key key) {
+		try {
+			dataStore.delete(key);
+			return Constant.RESPONSE_SUCCESS;
+		} catch (Exception e) {
+			return Constant.RESPONSE_ERROR;
+		}
 	}
 }
