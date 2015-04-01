@@ -56,4 +56,9 @@ public class ContextEntity {
 	public void setTimeStamp(long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(id) + " " + sensor;
+	}
 }
