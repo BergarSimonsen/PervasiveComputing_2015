@@ -4,18 +4,24 @@ import android.content.Context;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
 import java.util.Date;
 
 import dk.itu.spct.itucontextphone.model.ContextEntity;
+import dk.itu.spct.itucontextphone.model.ContextEntityList;
 import dk.itu.spct.itucontextphone.tools.Const;
+import dk.itu.spct.itucontextphone.tools.GlobalValues;
 import dk.itu.spct.itucontextphone.tools.Utils;
 import dk.itu.spct.itucontextphone.view.MapActivity;
 
@@ -27,7 +33,6 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     private final String TAG = "LocationMonitor";
 
     private Context context;
-    private MapActivity mapActivity;
 
     private GoogleApiClient client;
     private Location lastLocation;
@@ -36,11 +41,18 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     private String lastUpdateTime;
     private String addressOutput;
 
-    public LocationMonitor(MapActivity mapActivity) {
-        this.mapActivity = mapActivity;
+    private ContextEntityList data;
+
+    private GlobalValues gv;
+
+    public LocationMonitor(Context context) {
+        this.context = context;
+        this.data = new ContextEntityList();
+        this.gv = GlobalValues.getInstance();
         buildGoogleApiClient();
         createLocationRequest();
         startClient();
+        startLocationUpdates();
     }
 
     @Override
@@ -69,6 +81,11 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         Utils.doLog(TAG, location.getLatitude() + ", " + location.getLongitude(), Const.INFO);
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        data.add(Utils.locationDataToContextEntity(location));
+        updateMap(location);
+//        if(GlobalValues.getInstance().getMapActivity() != null) {
+//            GlobalValues.getInstance().getMapActivity().setLocation(location);
+//        }
 //        updateUI(true);
     }
 
@@ -117,7 +134,26 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     }
 
     @Override
-    public ContextEntity sample() {
-        return null;
+    public synchronized ContextEntityList sample() {
+        ContextEntityList tmp = data;
+        data.clear();
+        return tmp;
+    }
+
+    private void updateMap(Location loc) {
+        if(gv.getMap() != null) {
+            LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
+            gv.getMap().setMyLocationEnabled(true);
+            gv.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 13));
+            gv.getMap().addMarker(new MarkerOptions().title("Custom marker").snippet("Some marker set by the location monitor").position(ll));
+        }
+    }
+
+    public ContextEntityList getData() {
+        return data;
+    }
+
+    public void setData(ContextEntityList data) {
+        this.data = data;
     }
 }

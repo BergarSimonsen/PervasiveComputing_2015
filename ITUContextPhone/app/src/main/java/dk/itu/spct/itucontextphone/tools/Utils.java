@@ -4,11 +4,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
+import android.text.format.Time;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
+
 import dk.itu.spct.itucontextphone.R;
+import dk.itu.spct.itucontextphone.model.ContextEntity;
 
 /**
  * Created by bs on 3/21/15.
@@ -115,5 +122,16 @@ public class Utils {
             default:
                 return "Unknown error";
         }
+    }
+
+    public static ContextEntity locationDataToContextEntity(Location location) {
+        String val = String.valueOf(location.getLongitude()) + "_" + String.valueOf(location.getLatitude());
+        ContextEntity e = new ContextEntity();
+        e.setId(UUID.randomUUID().getLeastSignificantBits());
+        e.setSensor("Android Location");
+        e.setValue(val);
+        e.setType("Location");
+        e.setTimeStamp(Calendar.getInstance().get(Calendar.MILLISECOND));
+        return e;
     }
 }

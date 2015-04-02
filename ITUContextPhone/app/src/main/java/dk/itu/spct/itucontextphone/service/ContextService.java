@@ -65,7 +65,7 @@ public class ContextService extends Service {
             public void run() {
                 while(true) {
                     try {
-                        Utils.doLog(TAG, "Service is running in main loop!", Const.INFO);
+//                        Utils.doLog(TAG, "Service is running in main loop!", Const.INFO);
                         Thread.sleep(Const.THREAD_SLEEP);
                         for(ContextMonitor m : monitors) {
                             m.sample();

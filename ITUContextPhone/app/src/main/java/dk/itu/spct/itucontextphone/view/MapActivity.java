@@ -1,6 +1,7 @@
 package dk.itu.spct.itucontextphone.view;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,19 +18,37 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import dk.itu.spct.itucontextphone.R;
 import dk.itu.spct.itucontextphone.service.ContextService;
 import dk.itu.spct.itucontextphone.tools.Const;
+import dk.itu.spct.itucontextphone.tools.GlobalValues;
 import dk.itu.spct.itucontextphone.tools.Utils;
 
 public class MapActivity extends ActionBarActivity implements OnMapReadyCallback {
 
     private static final String TAG = "MAP";
 
-    private double latitude;
-    private double longitude;
+    private GlobalValues gv;
+
+    private GoogleMap map;
+
+    public void setLocation(Location loc) {
+        if(map != null && loc != null) {
+            Utils.doLog(TAG, "Settings location 'manually'", Const.INFO);
+            gv.setLatestLatitude(loc.getLatitude());
+            gv.setLatestLongitude(loc.getLongitude());
+//            LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
+//            map.setMyLocationEnabled(true);
+//            map.moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 13));
+//            map.addMarker(new MarkerOptions().title("Custom marker").snippet("Some marker set by the location monitor").position(ll));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        gv = GlobalValues.getInstance();
+
+//        gv.setMapActivity(this);
 
 //        Bundle extras = getIntent().getExtras();
 //        latitude = extras.getDouble(Const.LATITUDE);
@@ -37,12 +56,13 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        startContextService();
+        map = mapFragment.getMap();
+//        startContextService();
     }
 
-    private void startContextService() {
-        startService(new Intent(MapActivity.this, ContextService.class));
-    }
+//    private void startContextService() {
+//        startService(new Intent(MapActivity.this, ContextService.class));
+//    }
 
 
     @Override
@@ -70,8 +90,8 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         String logPrefix = "onMapReady: ";
-        if(latitude > 0.0 && longitude > 0.0) {
-            LatLng loc = new LatLng(latitude, longitude);
+        if(gv.getLatestLatitude() > 0.0 && gv.getLatestLongitude() > 0.0) {
+            LatLng loc = new LatLng(gv.getLatestLatitude(), gv.getLatestLongitude());
 
             Utils.doLog(TAG, logPrefix + "LatLng: " + loc.toString(), Const.INFO);
 
