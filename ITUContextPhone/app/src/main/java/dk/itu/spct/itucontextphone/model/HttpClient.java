@@ -14,6 +14,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 //import org.glassfish.jersey.client.ClientResponse;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 
 //import javax.ws.rs.client.Client;
@@ -32,7 +33,8 @@ import javax.ws.rs.core.UriBuilder;
 public class HttpClient {
 
     private void runHttpClient() throws IOException {
-        Long id = 1L;
+
+    Long id = 1L;
     ClientResponse response;
     ObjectMapper mapper = new ObjectMapper();
 
@@ -46,6 +48,11 @@ public class HttpClient {
 
     // POST
     ContextEntity entity = new ContextEntity();
+    entity.setId(id);
+    entity.setTimeStamp(123456789);
+    entity.setType("ambient light");
+    entity.setValue("test");
+    entity.setSensor("sensor light");
     String json = mapper.writeValueAsString(entity);
     response = service.path("context").type(MediaType.APPLICATION_JSON).post(ClientResponse.class, json);
 
