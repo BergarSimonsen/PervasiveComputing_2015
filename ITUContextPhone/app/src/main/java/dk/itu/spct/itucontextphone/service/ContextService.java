@@ -7,6 +7,7 @@ import android.os.IBinder;
 
 import java.util.ArrayList;
 
+import dk.itu.spct.itucontextphone.model.ContextEntityList;
 import dk.itu.spct.itucontextphone.monitor.ContextMonitor;
 import dk.itu.spct.itucontextphone.tools.Const;
 import dk.itu.spct.itucontextphone.tools.Utils;
@@ -16,6 +17,7 @@ public class ContextService extends Service {
 
     private ArrayList<ContextMonitor> monitors;
     private ContextServiceBinder binder;
+    private ContextEntityList data;
 
     public ContextService() { }
 
@@ -23,7 +25,8 @@ public class ContextService extends Service {
     public void onCreate() {
         super.onCreate();
         Utils.doLog(TAG, "onCreate", Const.INFO);
-//        if(monitors == null) monitors = new ArrayList<Monitor>();
+        if(monitors == null) monitors = new ArrayList<ContextMonitor>();
+        if(data == null) data = new ContextEntityList();
         binder = new ContextServiceBinder();
         main();
     }
@@ -62,6 +65,7 @@ public class ContextService extends Service {
             public void run() {
                 while(true) {
                     try {
+                        Utils.doLog(TAG, "Service is running in main loop!", Const.INFO);
                         Thread.sleep(Const.THREAD_SLEEP);
                         for(ContextMonitor m : monitors) {
                             m.sample();

@@ -1,6 +1,5 @@
 package dk.itu.spct.itucontextphone;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -20,30 +19,44 @@ public class MainActivity extends ActionBarActivity {
 
     private final String TAG = "MainActivity";
 
-    private Button startLocationBtn;
+    private Button startServiceButton;
+    private Button startMapButton;
+
+    private Button locationMonitor;
+    private Button ambientMonitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startLocationBtn = (Button) findViewById(R.id.start_location_btn);
-        startLocationBtn.setOnClickListener(new View.OnClickListener() {
+        startMapButton = (Button) findViewById(R.id.start_map_btn);
+        startMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean locEnabled = Utils.isLocationEnabled(MainActivity.this);
-                if(locEnabled)
+                if (locEnabled)
                     startActivity(new Intent(MainActivity.this, MapActivity.class));
                 else {
                     Utils.showLocationDialog(MainActivity.this);
                     locEnabled = Utils.isLocationEnabled(MainActivity.this);
-                    if(locEnabled)
+                    if (locEnabled)
                         startActivity(new Intent(MainActivity.this, MapActivity.class));
                 }
             }
         });
-    }
 
+        startServiceButton = (Button) findViewById(R.id.start_service_btn);
+        startServiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        locationMonitor = (Button) findViewById(R.id.start_location_monitor);
+        ambientMonitor = (Button) findViewById(R.id.start_ambient_monitor);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -54,9 +67,6 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

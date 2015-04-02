@@ -1,5 +1,6 @@
 package dk.itu.spct.itucontextphone.view;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import dk.itu.spct.itucontextphone.R;
+import dk.itu.spct.itucontextphone.service.ContextService;
 import dk.itu.spct.itucontextphone.tools.Const;
 import dk.itu.spct.itucontextphone.tools.Utils;
 
@@ -35,6 +37,11 @@ public class MapActivity extends ActionBarActivity implements OnMapReadyCallback
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        startContextService();
+    }
+
+    private void startContextService() {
+        startService(new Intent(MapActivity.this, ContextService.class));
     }
 
 
