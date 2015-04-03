@@ -1,5 +1,8 @@
 package dk.itu.spct.itucontextphone.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by bs on 3/22/15.
  */
@@ -17,6 +20,16 @@ public class ContextEntity {
         this.value = value;
         this.type = type;
         this.timeStamp = timeStamp;
+    }
+
+    public static ContextEntity fromJson(JSONObject json) throws JSONException {
+        ContextEntity e = new ContextEntity();
+        e.setId(json.getLong("id"));
+        e.setValue(json.getString("value"));
+        e.setSensor(json.getString("sensor"));
+        e.setType(json.getString("type"));
+        e.setTimeStamp(json.getLong("timeStamp"));
+        return e;
     }
 
     public long getId() { return id; }
