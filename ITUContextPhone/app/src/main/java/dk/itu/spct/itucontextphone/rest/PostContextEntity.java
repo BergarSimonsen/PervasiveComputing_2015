@@ -30,71 +30,61 @@ public class PostContextEntity extends AsyncTask<ContextEntityList, Void, Respon
     @Override
     protected Response doInBackground(ContextEntityList... params) {
         InputStream inputStream = null;
-        JSONArray jsonArr = new JSONArray();
-        ContextEntityList tmpList = params[0];
+
+        ContextEntityList list = null;
+
+        HttpClient httpClient = null;
+        HttpPost httpPost = null;
+        HttpResponse httpResponse = null;
+        ObjectMapper mapper = null;
+        JSONObject res;
+        Response resp = null;
+
         try {
+            if(params != null && params.length > 0)
+                list = params[0];
 
-            // 1. create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
+            httpClient = new DefaultHttpClient();
+            httpPost = new HttpPost(Const.WS_POST_LIST);
+            mapper = new ObjectMapper();
 
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost(Const.WS_POST_LIST);
+            String s = mapper.writeValueAsString(list);
 
-            ObjectMapper mapper = new ObjectMapper();
-
-//            for(ContextEntity e : tmpList) {
-//                jsonArr.put(mapper.writeValueAsString(e));
-//            }
-
-            String s = mapper.writeValueAsString(tmpList);
-
-            // 5. set json to StringEntity
             StringEntity se = new StringEntity(s);
 
-            // 6. set httpPost Entity
             httpPost.setEntity(se);
 
-            // 7. Set some headers to inform server about the type of the content
             httpPost.setHeader("Accept", "application/json");
             httpPost.setHeader("Content-type", "application/json");
 
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
+            httpResponse = httpClient.execute(httpPost);
 
-            // 9. receive response as inputStream
             inputStream = httpResponse.getEntity().getContent();
 
-            // 10. convert inputstream to string
             String result = "";
             if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
+                result = Utils.convertInputStreamToString(inputStream);
 
-            JSONObject res = new JSONObject(result);
-            Response resp = new Response();
+            res = new JSONObject(result);
+            resp = new Response();
             resp.setData(ContextEntityList.fromJson((JSONArray) res.get("data")));
             resp.setResponseCode(res.getInt("responseCode"));
-
 
             Utils.doLog("POST", "result = " + result, Const.INFO);
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
+        } finally {
+            if(inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                    Utils.doLog("PostContextEntity", ex.getMessage() != null ? ex.getMessage() : "exception closing inputStream", Const.ERROR);
+                }
+            }
         }
 
-        // 11. return result
-        return null;
+        return resp;
     }
 
-    private String convertInputStreamToString(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
 
-        inputStream.close();
-        return result;
-
-    }
 }
