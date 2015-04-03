@@ -32,5 +32,5 @@ public class Const {
 
     // Thread sleep in millis (used in context service)
     public static long THREAD_SLEEP             = 5000;
-    public static int DATA_LIMIT                = 1;
+    public static int DATA_LIMIT                = 20;
 }
