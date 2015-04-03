@@ -31,5 +31,6 @@ public class Const {
     public static final String WS_POST_LIST     = WS_ROOT_URL + "/list";
 
     // Thread sleep in millis (used in context service)
-    public static long THREAD_SLEEP             = 0;
+    public static long THREAD_SLEEP             = 5000;
+    public static int DATA_LIMIT                = 1;
 }

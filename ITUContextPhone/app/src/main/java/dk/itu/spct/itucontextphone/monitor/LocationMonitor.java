@@ -134,10 +134,17 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     }
 
     @Override
-    public synchronized ContextEntityList sample() {
-        ContextEntityList tmp = data;
+    public ContextEntityList sample() {
+        ContextEntityList tmp = new ContextEntityList();
+        tmp.addAll(data);
+        Utils.doLog("ContextService", "sample, tmp.size() " + tmp.size() + " data.size() " + data.size(), Const.INFO);
         data.clear();
         return tmp;
+    }
+
+    @Override
+    public String getName() {
+        return "LocationMonitor";
     }
 
     private void updateMap(Location loc) {

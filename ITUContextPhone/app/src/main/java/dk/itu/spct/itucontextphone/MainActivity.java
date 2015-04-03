@@ -41,89 +41,6 @@ public class MainActivity extends ActionBarActivity {
 
     private boolean serviceIsBound;
 
-
-//    public static String POST(){
-//        InputStream inputStream = null;
-//        String result = "";
-//        String url = "http://1-dot-united-time-89112.appspot.com/context/single";
-//        try {
-//
-//            // 1. create HttpClient
-//            HttpClient httpclient = new DefaultHttpClient();
-//
-//            // 2. make POST request to the given URL
-//            HttpPost httpPost = new HttpPost(url);
-//
-//            String json = "";
-//
-//            // 3. build jsonObject
-////            JSONObject jsonObject = new JSONObject("ContextEntity");
-////            jsonObject.accumulate("id", 987654321);
-////            jsonObject.accumulate("timeStamp", 123456789);
-////            jsonObject.accumulate("type", "ambient light");
-////            jsonObject.accumulate("value", "some value");
-////            jsonObject.accumulate("sensor", "sensor light");
-//
-//            // 4. convert JSONObject to JSON to String
-////            json = jsonObject.toString();
-//
-//            ContextEntity entity = new ContextEntity();
-//            entity.setId(5L);
-//            entity.setTimeStamp(989898989);
-//            entity.setType("ambient light123123");
-//            entity.setValue("test123123");
-//            entity.setSensor("sensor123123 light");
-//
-//            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-//            ObjectMapper mapper = new ObjectMapper();
-//            json = mapper.writeValueAsString(entity);
-//
-//            // 5. set json to StringEntity
-//            StringEntity se = new StringEntity(json);
-//
-//            Utils.doLog("XXX", "----------------------", Const.INFO);
-//            Utils.doLog("XXX", json, Const.INFO);
-//            Utils.doLog("XXX", "----------------------", Const.INFO);
-//
-//            // 6. set httpPost Entity
-//            httpPost.setEntity(se);
-//
-//            // 7. Set some headers to inform server about the type of the content
-//            httpPost.setHeader("Accept", "application/json");
-//            httpPost.setHeader("Content-type", "application/json");
-//
-//            // 8. Execute POST request to the given URL
-//            HttpResponse httpResponse = httpclient.execute(httpPost);
-//
-//            // 9. receive response as inputStream
-//            inputStream = httpResponse.getEntity().getContent();
-//
-//            // 10. convert inputstream to string
-//            if(inputStream != null)
-//                result = convertInputStreamToString(inputStream);
-//            else
-//                result = "Did not work!";
-//
-//        } catch (Exception e) {
-//            Log.d("InputStream", e.getLocalizedMessage());
-//        }
-//
-//        // 11. return result
-//        return result;
-//    }
-//
-//    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
-//        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-//        String line = "";
-//        String result = "";
-//        while((line = bufferedReader.readLine()) != null)
-//            result += line;
-//
-//        inputStream.close();
-//        return result;
-//
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +90,9 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void run() {
                         LocationMonitor locMon = new LocationMonitor(MainActivity.this);
+                        if(gv.getService() != null) {
+                            gv.getService().registerMonitor(locMon);
+                        }
                     }
                 });
                 t.start();
@@ -231,6 +151,7 @@ public class MainActivity extends ActionBarActivity {
     };
 
     private void unbindContextService() {
+        gv.getService().stop();
         getApplicationContext().unbindService(connection);
         Utils.doLog(TAG, "Context service unbound!", Const.INFO);
         serviceIsBound = false;

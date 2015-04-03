@@ -7,4 +7,6 @@ import dk.itu.spct.itucontextphone.model.ContextEntityList;
  */
 public interface ContextMonitor {
     public ContextEntityList sample();
+
+    public String getName();
 }
