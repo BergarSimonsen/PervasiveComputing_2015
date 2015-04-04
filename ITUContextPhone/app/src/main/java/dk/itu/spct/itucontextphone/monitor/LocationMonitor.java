@@ -20,6 +20,7 @@ import java.util.Date;
 
 import dk.itu.spct.itucontextphone.model.ContextEntity;
 import dk.itu.spct.itucontextphone.model.ContextEntityList;
+import dk.itu.spct.itucontextphone.rest.PostContextEntity;
 import dk.itu.spct.itucontextphone.tools.Const;
 import dk.itu.spct.itucontextphone.tools.GlobalValues;
 import dk.itu.spct.itucontextphone.tools.Utils;
@@ -163,4 +164,18 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     public void setData(ContextEntityList data) {
         this.data = data;
     }
+
+    private long getUUID(){
+        ContextEntityList list = getData();
+        long id = list.get(0).getId();
+        return id;
+    }
+
+    private void postDataToCloud(){
+        ContextEntityList list = getData();
+        new PostContextEntity().execute(list);
+    }
+
+
+
 }
