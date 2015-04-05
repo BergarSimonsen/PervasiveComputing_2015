@@ -27,7 +27,17 @@ public class AmbientMonitor implements ContextMonitor, SensorEventListener {
         this.data = new ContextEntityList();
         initializeSensorManager();
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        startMonitor();
+    }
+
+    public void startMonitor() {
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void stopMonitor() {
+        sensorManager.unregisterListener(this);
+        sensorManager = null;
+        sensorManager = null;
     }
 
     private void initializeSensorManager() {
@@ -54,11 +64,13 @@ public class AmbientMonitor implements ContextMonitor, SensorEventListener {
                 v += "__";
             }
         }
+//        ce.setId(Long.valueOf(ce.hashCode()));
         ce.setId(Utils.getRandomId());
         ce.setValue(v);
         ce.setTimeStamp(Utils.getTimeNow());
         ce.setType("Ambient Light");
         ce.setSensor("Type_Light");
+        ce.setId(Utils.generateHash(ce));
         return ce;
     }
 

@@ -76,18 +76,25 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         Utils.doLog(TAG, "onConnectionSuspended", Const.INFO);
     }
 
+    private ContextEntity toContextEntity(Location location) {
+        String val = String.valueOf(location.getLongitude()) + "_" + String.valueOf(location.getLatitude());
+        ContextEntity e = new ContextEntity();
+        e.setSensor("Android Location");
+        e.setValue(val);
+        e.setType("Type_Location");
+        e.setTimeStamp(Utils.getTimeNow());
+        e.setId(Utils.generateHash(e));
+        return e;
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         Utils.doLog(TAG, "onLocationChanged", Const.INFO);
         Utils.doLog(TAG, location.getLatitude() + ", " + location.getLongitude(), Const.INFO);
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        data.add(Utils.locationDataToContextEntity(location));
+        data.add(toContextEntity(location));
         updateMap(location);
-//        if(GlobalValues.getInstance().getMapActivity() != null) {
-//            GlobalValues.getInstance().getMapActivity().setLocation(location);
-//        }
-//        updateUI(true);
     }
 
     @Override
@@ -95,7 +102,7 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         Utils.doLog(TAG, "onConnectionFailed", Const.INFO);
     }
 
-    private void stopLocationUpdates() {
+    public void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(client, this);
         Utils.doLog(TAG, "Stopped requesting location updates", Const.INFO);
     }
@@ -107,12 +114,12 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         }
     }
 
-    private void startClient() {
+    public void startClient() {
         client.connect();
         Utils.doLog(TAG, "Client started!", Const.INFO);
     }
 
-    private void stopClient() {
+    public void stopClient() {
         client.disconnect();
         Utils.doLog(TAG, "Client stopped!", Const.INFO);
     }
@@ -153,7 +160,7 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
             LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
             gv.getMap().setMyLocationEnabled(true);
             gv.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 13));
-            gv.getMap().addMarker(new MarkerOptions().title("Custom marker").snippet("Some marker set by the location monitor").position(ll));
+            gv.getMap().addMarker(new MarkerOptions().title("Android Location Marker").snippet("Some marker set by the location monitor").position(ll));
         }
     }
 
@@ -170,12 +177,4 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         long id = list.get(0).getId();
         return id;
     }
-
-    private void postDataToCloud(){
-        ContextEntityList list = getData();
-        new PostContextEntity().execute(list);
-    }
-
-
-
 }
