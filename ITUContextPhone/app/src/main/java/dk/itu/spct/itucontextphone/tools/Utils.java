@@ -134,9 +134,17 @@ public class Utils {
         e.setId(UUID.randomUUID().getLeastSignificantBits());
         e.setSensor("Android Location");
         e.setValue(val);
-        e.setType("Location");
+        e.setType("Type_Location");
         e.setTimeStamp(Calendar.getInstance().get(Calendar.MILLISECOND));
         return e;
+    }
+
+    public static long getRandomId() {
+        return UUID.randomUUID().getLeastSignificantBits();
+    }
+
+    public static long getTimeNow() {
+        return Calendar.getInstance().get(Calendar.MILLISECOND);
     }
 
     public static String convertInputStreamToString(InputStream inputStream) throws IOException {

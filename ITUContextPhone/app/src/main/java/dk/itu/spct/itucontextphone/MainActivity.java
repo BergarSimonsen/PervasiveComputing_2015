@@ -17,6 +17,7 @@ import com.google.android.gms.maps.MapFragment;
 
 import dk.itu.spct.itucontextphone.model.ContextEntity;
 import dk.itu.spct.itucontextphone.model.ContextEntityList;
+import dk.itu.spct.itucontextphone.monitor.AmbientMonitor;
 import dk.itu.spct.itucontextphone.monitor.LocationMonitor;
 import dk.itu.spct.itucontextphone.rest.GetContextEntity;
 import dk.itu.spct.itucontextphone.rest.PostContextEntity;
@@ -99,6 +100,21 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         ambientMonitor = (Button) findViewById(R.id.start_ambient_monitor);
+        ambientMonitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AmbientMonitor amMonitor = new AmbientMonitor(MainActivity.this);
+                        if(gv.getService() != null) {
+                            gv.getService().registerMonitor(amMonitor);
+                        }
+                    }
+                });
+                t.start();
+            }
+        });
     }
 
     private void toggleService() {

@@ -88,13 +88,14 @@ public class ContextService extends Service {
             public void run() {
                 while(running) {
                     try {
-//                        Utils.doLog(TAG, "Service is running in main loop!", Const.INFO);
                         Thread.sleep(Const.THREAD_SLEEP);
                         if(!running) break;
                         for(ContextMonitor m : monitors) {
                             ContextEntityList tmp = m.sample();
-                            Utils.doLog("ContextService", "tmp size: " + tmp.size(), Const.INFO);
-                            addToData(tmp);
+                            if(tmp != null) {
+                                Utils.doLog("ContextService", "tmp size: " + tmp.size(), Const.INFO);
+                                addToData(tmp);
+                            }
                             Utils.doLog(TAG, "doneSampling " + m.getName() + " data.size(): " + data.size(), Const.INFO);
                             // TODO: complete
                         }
