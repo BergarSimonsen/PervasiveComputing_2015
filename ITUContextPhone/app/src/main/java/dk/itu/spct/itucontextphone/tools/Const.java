@@ -6,7 +6,7 @@ package dk.itu.spct.itucontextphone.tools;
 public class Const {
 
     // Application wide log tag
-    public static final String TAG          =  "ITU_Context_phone";
+    public static final String TAG              =  "ITU_Context_phone";
 
     // Log level constants
     public static final int DEBUG               = 0;
@@ -33,4 +33,7 @@ public class Const {
     // Thread sleep in millis (used in context service)
     public static long THREAD_SLEEP             = 5000;
     public static int DATA_LIMIT                = 20;
+
+    // Accelerometer sample rate in ms
+    public static long ACC_SAMPLE_RATE           = 500;
 }

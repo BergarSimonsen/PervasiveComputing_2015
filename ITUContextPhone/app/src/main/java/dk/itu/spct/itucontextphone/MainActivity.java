@@ -17,6 +17,7 @@ import com.google.android.gms.maps.MapFragment;
 
 import dk.itu.spct.itucontextphone.model.ContextEntity;
 import dk.itu.spct.itucontextphone.model.ContextEntityList;
+import dk.itu.spct.itucontextphone.monitor.AccelerationMonitor;
 import dk.itu.spct.itucontextphone.monitor.AmbientMonitor;
 import dk.itu.spct.itucontextphone.monitor.LocationMonitor;
 import dk.itu.spct.itucontextphone.rest.GetContextEntity;
@@ -37,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
 
     private Button locationMonitor;
     private Button ambientMonitor;
+    private Button accelerationMonitor;
 
     private GoogleMap map;
 
@@ -109,6 +111,22 @@ public class MainActivity extends ActionBarActivity {
                         AmbientMonitor amMonitor = new AmbientMonitor(MainActivity.this);
                         if(gv.getService() != null) {
                             gv.getService().registerMonitor(amMonitor);
+                        }
+                    }
+                });
+                t.start();
+            }
+        });
+        accelerationMonitor = (Button) findViewById(R.id.start_acceleration_monitor);
+        accelerationMonitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AccelerationMonitor accMonitor = new AccelerationMonitor(MainActivity.this);
+                        if(gv.getService() != null) {
+                            gv.getService().registerMonitor(accMonitor);
                         }
                     }
                 });
