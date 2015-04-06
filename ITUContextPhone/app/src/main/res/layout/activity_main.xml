@@ -6,11 +6,11 @@
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/test_button"
-        android:text="Test Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/test_button"-->
+        <!--android:text="Test Button"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
 
     <Button
         android:id="@+id/start_service_btn"
@@ -21,6 +21,18 @@
     <Button
         android:id="@+id/start_location_monitor"
         android:text="Start Location Monitor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/start_pibeacon_monitor"
+        android:text="Start PIBeacon Monitor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/start_ranging_monitor"
+        android:text="Start PIBeacon Ranging Monitor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

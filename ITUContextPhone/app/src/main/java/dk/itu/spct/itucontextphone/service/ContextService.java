@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import dk.itu.spct.itucontextphone.model.ContextEntity;
 import dk.itu.spct.itucontextphone.model.ContextEntityList;
@@ -19,6 +20,12 @@ public class ContextService extends Service {
 
     private ArrayList<ContextMonitor> monitors;
     private ContextServiceBinder binder;
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     private ContextEntityList data;
 
     public ContextService() { }
@@ -80,6 +87,18 @@ public class ContextService extends Service {
 
     public synchronized void unregisterMonitor(ContextMonitor monitor) {
         monitors.remove(monitor);
+    }
+
+    public synchronized void unregisterMonitor(String name) {
+        Iterator<ContextMonitor> it = monitors.iterator();
+        while(it.hasNext()) {
+            ContextMonitor m = it.next();
+            if(m.getName().equals(name)) {
+                monitors.remove(m);
+                break;
+            }
+        }
+
     }
 
     private void main() {

@@ -15,13 +15,12 @@ import android.widget.Button;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 
-import dk.itu.spct.itucontextphone.model.ContextEntity;
-import dk.itu.spct.itucontextphone.model.ContextEntityList;
 import dk.itu.spct.itucontextphone.monitor.AccelerationMonitor;
 import dk.itu.spct.itucontextphone.monitor.AmbientMonitor;
+import dk.itu.spct.itucontextphone.monitor.BeaconMonitor;
+import dk.itu.spct.itucontextphone.monitor.BeaconRangingMonitor;
+import dk.itu.spct.itucontextphone.monitor.ContextMonitor;
 import dk.itu.spct.itucontextphone.monitor.LocationMonitor;
-import dk.itu.spct.itucontextphone.rest.GetContextEntity;
-import dk.itu.spct.itucontextphone.rest.PostContextEntity;
 import dk.itu.spct.itucontextphone.service.ContextService;
 import dk.itu.spct.itucontextphone.tools.Const;
 import dk.itu.spct.itucontextphone.tools.GlobalValues;
@@ -36,13 +35,24 @@ public class MainActivity extends ActionBarActivity {
 
     private Button startServiceButton;
 
-    private Button locationMonitor;
-    private Button ambientMonitor;
-    private Button accelerationMonitor;
+    private Button accelerationMonitorButton;
+    private Button locationMonitorButton;
+    private Button ambientMonitorButton;
+    private Button pibeaconMonitorButton;
+    private Button rangingButton;
 
     private GoogleMap map;
 
+    private LocationMonitor locationMonitor;
+    private AmbientMonitor ambientMonitor;
+    private BeaconMonitor beaconMonitor;
+    private BeaconRangingMonitor beaconRangingMonitor;
+
     private boolean serviceIsBound;
+    private boolean locationStarted;
+    private boolean ambientStarted;
+    private boolean beaconStarted;
+    private boolean beaconRangingStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +65,6 @@ public class MainActivity extends ActionBarActivity {
         map = mf.getMap();
         gv.setMap(map);
 
-        Button tb = (Button) findViewById(R.id.test_button);
-        tb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                try {
-//                    new RestTask().execute(new URL("http://localhost:8080"));
-                    ContextEntity e = new ContextEntity();
-                    e.setId(22);
-                    e.setTimeStamp(123456);
-                    e.setType("SOME_TYP");
-                    e.setValue("some random value for testing");
-                    e.setSensor("just another sensor");
-                    ContextEntityList tmp = new ContextEntityList();
-                    tmp.add(e);
-//                    new PostContextEntity().execute(tmp);
-                new GetContextEntity().execute(0L);
-//                } catch (MalformedURLException e) {
-//                    e.printStackTrace();
-//                }
-            }
-        });
-
         startServiceButton = (Button) findViewById(R.id.start_service_btn);
         startServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,47 +73,64 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        locationMonitor = (Button) findViewById(R.id.start_location_monitor);
-        locationMonitor.setOnClickListener(new View.OnClickListener() {
+        locationMonitorButton = (Button) findViewById(R.id.start_location_monitor);
+        locationMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        LocationMonitor locMon = new LocationMonitor(MainActivity.this);
-                        if(gv.getService() != null) {
-                            gv.getService().registerMonitor(locMon);
-                        }
-                    }
-                });
-                t.start();
+//                Thread t = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        toggleLocation();
+//                    }
+//                });
+//                t.start();
+                toggleLocation();
+                updateButtonUI();
             }
         });
-        ambientMonitor = (Button) findViewById(R.id.start_ambient_monitor);
-        ambientMonitor.setOnClickListener(new View.OnClickListener() {
+
+        pibeaconMonitorButton = (Button) findViewById(R.id.start_pibeacon_monitor);
+        pibeaconMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AmbientMonitor amMonitor = new AmbientMonitor(MainActivity.this);
-                        if(gv.getService() != null) {
-                            gv.getService().registerMonitor(amMonitor);
-                        }
-                    }
-                });
-                t.start();
+                toggleBeacon();
+                updateButtonUI();
             }
         });
-        accelerationMonitor = (Button) findViewById(R.id.start_acceleration_monitor);
-        accelerationMonitor.setOnClickListener(new View.OnClickListener() {
+
+        rangingButton = (Button) findViewById(R.id.start_ranging_monitor);
+        rangingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleBeaconRanging();
+                updateButtonUI();
+            }
+        });
+
+        ambientMonitorButton = (Button) findViewById(R.id.start_ambient_monitor);
+        ambientMonitorButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Thread t = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        toggleAmbient();
+//                    }
+//                });
+//                t.start();'
+                toggleAmbient();
+                updateButtonUI();
+            }
+        });
+        accelerationMonitorButton = (Button) findViewById(R.id.start_acceleration_monitor);
+        accelerationMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Thread t = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         AccelerationMonitor accMonitor = new AccelerationMonitor(MainActivity.this);
-                        if(gv.getService() != null) {
+                        if (gv.getService() != null) {
                             gv.getService().registerMonitor(accMonitor);
                         }
                     }
@@ -135,19 +140,123 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    private void toggleBeaconRanging() {
+        if(beaconRangingStarted) 
+            stopBeaconRangingMonitor();
+        else
+            startBeaconRangingMonitor();
+    }
+
+    private void startBeaconRangingMonitor() {
+        beaconRangingMonitor = new BeaconRangingMonitor(MainActivity.this);
+        registerMonitor(beaconRangingMonitor);
+        beaconRangingStarted = true;
+    }
+
+    private void stopBeaconRangingMonitor() {
+        if(beaconRangingMonitor != null) {
+            beaconRangingMonitor.stopMonitor();
+            unregisterMonitor(beaconRangingMonitor);
+            beaconRangingMonitor = null;
+            beaconRangingStarted = false;
+        }
+    }
+
+    private void toggleBeacon() {
+        if(beaconStarted) {
+            stopBeaconMonitor();
+        } else {
+            startBeaconMonitor();
+        }
+    }
+
+    private void stopBeaconMonitor() {
+        if(beaconMonitor != null) {
+            beaconMonitor.stopMonitor();
+            unregisterMonitor(beaconMonitor);
+            beaconMonitor = null;
+            beaconStarted = false;
+        }
+    }
+
+    private void startBeaconMonitor() {
+        beaconMonitor = new BeaconMonitor(MainActivity.this);
+        registerMonitor(beaconMonitor);
+        beaconStarted = true;
+    }
+
     private void toggleService() {
         if(serviceIsBound)
             unbindContextService();
         else
             bindContextService();
-        updateServiceButton(serviceIsBound);
+        updateButtonUI();
     }
 
-    private void updateServiceButton(boolean isBound) {
-        if(isBound)
-            startServiceButton.setText("Stop Service");
+    private void toggleLocation() {
+        if(locationStarted) {
+            stopLocationMonitor();
+        } else {
+            startLocationMonitor();
+        }
+    }
+
+    private void toggleAmbient() {
+        if(ambientStarted)
+            stopAmbientMonitor();
         else
-            startServiceButton.setText("Start Service");
+            startAmbientMonitor();
+    }
+
+    private void startAmbientMonitor() {
+        ambientMonitor = new AmbientMonitor(MainActivity.this);
+        registerMonitor(ambientMonitor);
+        ambientStarted = true;
+    }
+
+    private void stopAmbientMonitor() {
+        if(ambientMonitor != null) {
+            ambientMonitor.stopMonitor();
+            unregisterMonitor(ambientMonitor);
+            ambientMonitor = null;
+            ambientStarted = false;
+        }
+    }
+
+    private void startLocationMonitor() {
+        locationMonitor = new LocationMonitor(MainActivity.this);
+        registerMonitor(locationMonitor);
+        locationStarted = true;
+    }
+
+    private void stopLocationMonitor() {
+        if(locationMonitor != null) {
+            locationMonitor.stopLocationUpdates();
+            locationMonitor.stopClient();
+            unregisterMonitor(locationMonitor);
+            locationMonitor = null;
+            locationStarted = false;
+        }
+    }
+
+    private void registerMonitor(ContextMonitor m) {
+        if(gv.getService() != null) {
+            gv.getService().registerMonitor(m);
+        }
+    }
+
+    private void unregisterMonitor(ContextMonitor m) {
+        if(gv.getService() != null) {
+            gv.getService().unregisterMonitor(m.getName());
+        }
+    }
+
+    private void updateButtonUI() {
+        startServiceButton.setText(serviceIsBound ? "Stop Service" : "Start Service");
+        locationMonitorButton.setText(locationStarted ? "Stop Location Monitor" : "Start Location Monitor");
+        ambientMonitorButton.setText(ambientStarted ? "Stop Ambient Monitor" : "Start Ambient Monitor");
+        pibeaconMonitorButton.setText(beaconStarted ? "Stop PIBeacon Monitor" : "Start PIBeacon Monitor");
+        rangingButton.setText(beaconRangingStarted ? "Stop PIBeacon Ranging Monitor" : "Start PIBeacon Ranging Monitor");
     }
 
     @Override

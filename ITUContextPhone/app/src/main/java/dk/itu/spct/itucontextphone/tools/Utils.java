@@ -128,15 +128,20 @@ public class Utils {
         }
     }
 
-    public static ContextEntity locationDataToContextEntity(Location location) {
-        String val = String.valueOf(location.getLongitude()) + "_" + String.valueOf(location.getLatitude());
-        ContextEntity e = new ContextEntity();
-        e.setId(UUID.randomUUID().getLeastSignificantBits());
-        e.setSensor("Android Location");
-        e.setValue(val);
-        e.setType("Type_Location");
-        e.setTimeStamp(Calendar.getInstance().get(Calendar.MILLISECOND));
-        return e;
+//    public static ContextEntity locationDataToContextEntity(Location location) {
+//        String val = String.valueOf(location.getLongitude()) + "_" + String.valueOf(location.getLatitude());
+//        ContextEntity e = new ContextEntity();
+//        e.setId(UUID.randomUUID().getLeastSignificantBits());
+//        e.setSensor("Android Location");
+//        e.setValue(val);
+//        e.setType("Type_Location");
+//        e.setTimeStamp(Calendar.getInstance().get(Calendar.MILLISECOND));
+//        return e;
+//    }
+
+    public static long generateHash(ContextEntity e) {
+        String s = e.getSensor().toString() + e.getType().toString() + e.getValue().toString() + e.getTimeStamp();
+        return s.hashCode();
     }
 
     public static long getRandomId() {
@@ -144,7 +149,8 @@ public class Utils {
     }
 
     public static long getTimeNow() {
-        return Calendar.getInstance().get(Calendar.MILLISECOND);
+        return System.currentTimeMillis();
+//        return Calendar.getInstance().get(Calendar.MILLISECOND);
     }
 
     public static String convertInputStreamToString(InputStream inputStream) throws IOException {
