@@ -45,12 +45,14 @@ public class MainActivity extends ActionBarActivity {
 
     private LocationMonitor locationMonitor;
     private AmbientMonitor ambientMonitor;
+    private AccelerationMonitor accelerationMonitor;
     private BeaconMonitor beaconMonitor;
     private BeaconRangingMonitor beaconRangingMonitor;
 
     private boolean serviceIsBound;
     private boolean locationStarted;
     private boolean ambientStarted;
+    private boolean accelerometerStarted;
     private boolean beaconStarted;
     private boolean beaconRangingStarted;
 
@@ -126,16 +128,18 @@ public class MainActivity extends ActionBarActivity {
         accelerationMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        AccelerationMonitor accMonitor = new AccelerationMonitor(MainActivity.this);
-                        if (gv.getService() != null) {
-                            gv.getService().registerMonitor(accMonitor);
-                        }
-                    }
-                });
-                t.start();
+//                Thread t = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        AccelerationMonitor accMonitor = new AccelerationMonitor(MainActivity.this);
+//                        if (gv.getService() != null) {
+//                            gv.getService().registerMonitor(accMonitor);
+//                        }
+//                    }
+//                });
+//                t.start();
+                toggleAccelerometer();
+                updateButtonUI();
             }
         });
     }
@@ -223,6 +227,28 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void toggleAccelerometer() {
+        if(accelerometerStarted)
+            stopAccelerationMonitor();
+        else
+            startAccelerationMonitor();
+    }
+
+    private void startAccelerationMonitor() {
+        accelerationMonitor = new AccelerationMonitor(MainActivity.this);
+        registerMonitor(accelerationMonitor);
+        accelerometerStarted = true;
+    }
+
+    private void stopAccelerationMonitor() {
+        if(accelerationMonitor != null) {
+            accelerationMonitor.stopMonitor();
+            unregisterMonitor(accelerationMonitor);
+            accelerationMonitor = null;
+            accelerometerStarted = false;
+        }
+    }
+
     private void startLocationMonitor() {
         locationMonitor = new LocationMonitor(MainActivity.this);
         registerMonitor(locationMonitor);
@@ -255,6 +281,7 @@ public class MainActivity extends ActionBarActivity {
         startServiceButton.setText(serviceIsBound ? "Stop Service" : "Start Service");
         locationMonitorButton.setText(locationStarted ? "Stop Location Monitor" : "Start Location Monitor");
         ambientMonitorButton.setText(ambientStarted ? "Stop Ambient Monitor" : "Start Ambient Monitor");
+        accelerationMonitorButton.setText(accelerometerStarted ? "Stop Acceleration Monitor" : "Start Acceleration Monitor");
         pibeaconMonitorButton.setText(beaconStarted ? "Stop PIBeacon Monitor" : "Start PIBeacon Monitor");
         rangingButton.setText(beaconRangingStarted ? "Stop PIBeacon Ranging Monitor" : "Start PIBeacon Ranging Monitor");
     }

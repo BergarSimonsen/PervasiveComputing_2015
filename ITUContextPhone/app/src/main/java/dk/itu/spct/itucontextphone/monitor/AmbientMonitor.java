@@ -37,7 +37,6 @@ public class AmbientMonitor implements ContextMonitor, SensorEventListener {
     public void stopMonitor() {
         sensorManager.unregisterListener(this);
         sensorManager = null;
-        sensorManager = null;
     }
 
     private void initializeSensorManager() {

@@ -14,24 +14,34 @@ import dk.itu.spct.itucontextphone.tools.Utils;
 public class AccelerationMonitor implements ContextMonitor, SensorEventListener {
 
     private static final String TAG = "AccelerationMonitor";
-    private SensorManager senSensorManager;
+    private SensorManager sensorManager;
     private Context context;
+    private Sensor senAccelerometer;
     private ContextEntityList data;
 
     private long lastUpdate = 0;
+
+    public void startMonitor() {
+        sensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void stopMonitor() {
+        sensorManager.unregisterListener(this);
+        sensorManager = null;
+    }
 
     public AccelerationMonitor(Context context) {
         this.context = context;
         this.data = new ContextEntityList();
         initializeSensorManager();
 
-        Sensor senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        senSensorManager.registerListener(this, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        senAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        startMonitor();
     }
 
     private void initializeSensorManager() {
         if (context != null)
-            senSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+            sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         else
             Utils.doLog(TAG, "Could not initialize sensor manager!", Const.ERROR);
     }
@@ -52,7 +62,7 @@ public class AccelerationMonitor implements ContextMonitor, SensorEventListener 
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Utils.doLog(TAG, "onSensorChanged - acceleration", Const.INFO);
+        //Utils.doLog(TAG, "onSensorChanged - acceleration", Const.INFO);
 
         long curTime = System.currentTimeMillis();
 
