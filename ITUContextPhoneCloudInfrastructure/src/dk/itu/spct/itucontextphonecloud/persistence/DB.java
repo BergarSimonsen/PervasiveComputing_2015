@@ -1,5 +1,7 @@
 package dk.itu.spct.itucontextphonecloud.persistence;
 
+import java.util.ArrayList;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -54,6 +56,16 @@ public class DB {
 		}
 
 		return list;
+	}
+	
+	public void deleteAll() {
+		Query query = new Query(Constant.CONTEXT_ENTITY);
+		PreparedQuery pq = dataStore.prepare(query);
+		ArrayList<Key> keys = new ArrayList<Key>();
+		for(Entity e : pq.asIterable()) {
+			keys.add(e.getKey());
+		}
+		dataStore.delete(keys);
 	}
 
 	public ContextEntity getContextEntity(long id) {
