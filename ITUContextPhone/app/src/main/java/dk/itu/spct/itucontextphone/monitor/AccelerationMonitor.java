@@ -85,11 +85,11 @@ public class AccelerationMonitor implements ContextMonitor, SensorEventListener 
                 v += "__";
             }
         }
-        ce.setId(Utils.getRandomId());
         ce.setValue(v);
         ce.setTimeStamp(Utils.getTimeNow());
         ce.setType("Acceleration");
         ce.setSensor("Accelerometer");
+        ce.setId(Utils.generateHash(ce));
         return ce;
     }
 
