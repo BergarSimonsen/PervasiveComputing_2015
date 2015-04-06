@@ -19,6 +19,10 @@ public class DBController {
 			return Constant.RESPONSE_NOT_FOUND;
 	}
 	
+	public void deleteAll() {
+		db.deleteAll();
+	}
+	
 	public Response getContextEntities() {
 		Response r = new Response();
 		r.setData(db.getContextEntities());

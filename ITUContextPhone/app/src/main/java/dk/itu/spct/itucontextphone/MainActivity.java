@@ -74,13 +74,6 @@ public class MainActivity extends ActionBarActivity {
         locationMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Thread t = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toggleLocation();
-//                    }
-//                });
-//                t.start();
                 toggleLocation();
                 updateButtonUI();
             }
@@ -108,13 +101,6 @@ public class MainActivity extends ActionBarActivity {
         ambientMonitorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Thread t = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        toggleAmbient();
-//                    }
-//                });
-//                t.start();'
                 toggleAmbient();
                 updateButtonUI();
             }
@@ -227,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void unregisterMonitor(ContextMonitor m) {
-        if(gv.getService() != null) {
+        if(gv.getService() != null && serviceIsBound) {
             gv.getService().unregisterMonitor(m.getName());
         }
     }
@@ -264,7 +250,7 @@ public class MainActivity extends ActionBarActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             Utils.doLog(TAG, "onServiceConnected", Const.INFO);
             ContextService.ContextServiceBinder binder = (ContextService.ContextServiceBinder) service;
-            GlobalValues.getInstance().setService(binder.getService());
+            gv.setService(binder.getService());
         }
 
         @Override

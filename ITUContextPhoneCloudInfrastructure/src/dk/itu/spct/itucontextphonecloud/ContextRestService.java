@@ -45,6 +45,14 @@ public class ContextRestService {
 		return dbc.getContextEntity(entity.getId());
 	}
 	
+	@GET
+	@Path("/removeAllEntries")
+	public String removeAllEntries() {
+		init();
+		dbc.deleteAll();
+		return "Delete Finished";
+	}
+	
 	@POST
 	@Path("/list")
 	@Consumes(MediaType.APPLICATION_JSON)
