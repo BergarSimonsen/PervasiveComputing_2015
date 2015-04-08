@@ -79,9 +79,9 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
     private ContextEntity toContextEntity(Location location) {
         String val = String.valueOf(location.getLongitude()) + "_" + String.valueOf(location.getLatitude());
         ContextEntity e = new ContextEntity();
-        e.setSensor("Android Location");
+        e.setSensor(Const.SENSOR_LOCATION);
         e.setValue(val);
-        e.setType("Type_Location");
+        e.setType(Const.TYPE_LOCATION);
         e.setTimeStamp(Utils.getTimeNow());
         e.setId(Utils.generateHash(e));
         return e;
@@ -94,6 +94,7 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
         currentLocation = location;
         lastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         data.add(toContextEntity(location));
+        gv.setCurrentLocation(location);
         updateMap(location);
     }
 

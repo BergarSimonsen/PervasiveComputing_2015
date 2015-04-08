@@ -1,5 +1,7 @@
 package dk.itu.spct.itucontextphone.tools;
 
+import android.location.Location;
+
 import com.google.android.gms.maps.GoogleMap;
 
 import dk.itu.spct.itucontextphone.service.ContextService;
@@ -11,6 +13,8 @@ import dk.itu.spct.itucontextphone.view.MapActivity;
 public class GlobalValues {
 
 //    private MapActivity mapActivity;
+
+    private Location currentLocation;
 
     private double latestLongitude;
     private double latestLatitude;
@@ -64,5 +68,13 @@ public class GlobalValues {
 
     public void setMap(GoogleMap map) {
         this.map = map;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation) {
+        this.currentLocation = currentLocation;
     }
 }

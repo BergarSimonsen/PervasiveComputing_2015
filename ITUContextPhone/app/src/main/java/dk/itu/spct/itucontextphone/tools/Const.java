@@ -32,8 +32,20 @@ public class Const {
 
     // Thread sleep in millis (used in context service)
     public static long THREAD_SLEEP             = 5000;
-    public static int DATA_LIMIT                = 20;
+    public static int DATA_LIMIT                = 30;
 
     // Accelerometer sample rate in ms
     public static long ACC_SAMPLE_RATE           = 500;
+
+    // Sensor names
+    public static String SENSOR_BLUETOOTH       = "Sensor_BLUETOOTH";
+    public static String SENSOR_ACCELERATION    = "Sensor_ACCELERATION";
+    public static String SENSOR_LOCATION        = "Sensor_LOCATION";
+    public static String SENSOR_LIGHT           = "Sensor_LIGHT";
+
+    // Data types
+    public static String TYPE_AMBIENT_LIGHT     = "Type_AMBIENT_LIGHT";
+    public static String TYPE_ACCELERATION      = "Type_ACCELERATION";
+    public static String TYPE_LOCATION          = "Type_LOCATION";
+    public static String TYPE_PIBEACON          = "Type_PIBEACON";
 }

@@ -67,8 +67,8 @@ public class AmbientMonitor implements ContextMonitor, SensorEventListener {
         ce.setId(Utils.getRandomId());
         ce.setValue(v);
         ce.setTimeStamp(Utils.getTimeNow());
-        ce.setType("Ambient Light");
-        ce.setSensor("Type_Light");
+        ce.setType(Const.TYPE_AMBIENT_LIGHT);
+        ce.setSensor(Const.SENSOR_LIGHT);
         ce.setId(Utils.generateHash(ce));
         return ce;
     }
