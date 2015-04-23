@@ -161,7 +161,7 @@ public class LocationMonitor implements ContextMonitor, GoogleApiClient.Connecti
             LatLng ll = new LatLng(loc.getLatitude(), loc.getLongitude());
             gv.getMap().setMyLocationEnabled(true);
             gv.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(ll, 13));
-            gv.getMap().addMarker(new MarkerOptions().title("Android Location Marker").snippet("Some marker set by the location monitor").position(ll));
+            gv.getMap().addMarker(new MarkerOptions().title("Android Location Marker").snippet("Marker set by the location monitor").position(ll));
         }
     }
 
