@@ -1,0 +1,173 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.*;
+
+public class DataCleaner {
+
+
+    private static String OUT_FOLDER = "/home/bs/Desktop/spct_test/data/";
+    private static String IN_FOLDER = "/home/bs/Desktop/spct_test/input_data/";
+    private static String OUT_FILE = OUT_FOLDER = "out.csv";
+
+    private static boolean transform = false;
+    private static boolean smooth = false;
+
+    // Input files
+    private static final String FILE_UP     = IN_FOLDER + "Up.csv";
+    private static final String FILE_DOWN   = IN_FOLDER + "Down.csv";
+    private static final String FILE_RIGHT  = IN_FOLDER + "Right.csv";
+    private static final String FILE_LEFT   = IN_FOLDER + "Left.csv";
+    private static final String FILE_TILT_R = IN_FOLDER + "TiltR.csv";
+    private static final String FILE_TILT_L = IN_FOLDER + "TiltL.csv";
+
+    private static String[] labels = {"UP", "DOWN", "RIGHT", "LEFT", "TILT_R", "TILT_L"};
+
+    // Output files
+    private static final String OUT_FILE_UP     = OUT_FOLDER + "Out_Up.csv";
+    private static final String OUT_FILE_DOWN   = OUT_FOLDER + "Out_Down.csv";
+    private static final String OUT_FILE_RIGHT  = OUT_FOLDER + "Out_Right.csv";
+    private static final String OUT_FILE_LEFT   = OUT_FOLDER + "Out_Left.csv";
+    private static final String OUT_FILE_TILT_R = OUT_FOLDER + "Out_TiltR.csv";
+    private static final String OUT_FILE_TILT_L = OUT_FOLDER + "Out_TiltL.csv";
+
+    private static String[] inFiles;
+    private static String[] outFiles;
+    private static CsvData[] data;
+
+    public static void main(String[] args) {
+	inFiles = new String[6];
+	inFiles[0] = FILE_UP;
+	inFiles[1] = FILE_DOWN;
+	inFiles[2] = FILE_RIGHT;
+	inFiles[3] = FILE_LEFT;
+	inFiles[4] = FILE_TILT_R;
+	inFiles[5] = FILE_TILT_L;
+
+	outFiles = new String[6];
+	outFiles[0] = OUT_FILE_UP;
+	outFiles[1] = OUT_FILE_DOWN;
+	outFiles[2] = OUT_FILE_RIGHT;
+	outFiles[3] = OUT_FILE_LEFT;
+	outFiles[4] = OUT_FILE_TILT_R;
+	outFiles[5] = OUT_FILE_TILT_L;
+
+	data = new CsvData[6];
+
+	try {
+	    for (int i = 0; i < inFiles.length; i++) {
+		File file = new File(inFiles[i]);
+		FileReader fileReader = new FileReader(file);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		String line = "";
+
+		while ((line = bufferedReader.readLine()) != null) {
+		    String tmp[] = line.split(",");
+		    processData(tmp, i);
+		}
+
+		bufferedReader.close();
+		fileReader.close();
+		bufferedReader = null;
+		fileReader = null;
+		file = null;
+	    }
+
+	    System.out.println("Finished Reading");
+
+	    write();
+	    
+	    System.out.println("Finished writing");
+
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
+    }
+
+    public static void processData(String[] arr, int index) {
+
+	data[index] = new CsvData(labels[index]);
+
+	int ic = 1;
+
+	int i = 0;
+	System.out.println("PD: " + arr.length);
+	while (i < arr.length) {
+	    /*	    if(complex && i == 0) {
+		i++;
+		continue;
+		} */
+
+
+	    if(i + 5 <= arr.length) {
+		data[index].getAccX().add(arr[i]);
+		data[index].getAccY().add(arr[i+1]);
+		data[index].getAccZ().add(arr[i+2]);
+		data[index].getGyroX().add(arr[i+3]);
+		data[index].getGyroY().add(arr[i+4]);
+		data[index].getGyroZ().add(arr[i+5]);
+	    }
+
+	    i += 6;
+	}
+    }
+
+    public static void write() {
+	BufferedWriter bWriter = null;
+	try {
+	    File file = new File(OUT_FILE);
+	    FileWriter writer = new FileWriter(file);
+	    bWriter = new BufferedWriter(writer);
+	    
+	    String header = "";
+	    for(int i = 0; i < 30; i++) {
+		header += "AccX_" + i + ",";
+		header += "AccY_" + i + ",";
+		header += "AccZ_" + i + ",";
+		header += "GyroX_" + i + ",";
+		header += "GyroY_" + i + ",";
+		header += "GyroZ_" + i + ",";
+	    }
+	    header += "Label \n";
+
+	    int count = 0;
+
+	    String s = header;
+
+	    for (CsvData d : data) {
+		for (int i = 0; i < d.getAccX().size(); i++) {
+		    s += d.getAccX().get(i) + ",";
+		    s += d.getAccY().get(i) + ",";
+		    s += d.getAccZ().get(i) + ",";
+		    s += d.getGyroX().get(i) + ",";
+		    s += d.getGyroY().get(i) + ",";
+		    s += d.getGyroZ().get(i);
+		    if(count == 29) {
+			s += "," + d.getLabel();
+			s += "\n";
+			count = 0;
+		    } else {
+			s += ",";
+			count++;
+		    }
+		}
+	    }
+
+	    bWriter.write(s);
+	    bWriter.flush();
+
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} finally {
+	    try {
+                // Close the writer regardless of what happens...
+		if(bWriter != null)
+		    bWriter.close();
+            } catch (Exception e) {
+            }
+	}
+    }
+}
