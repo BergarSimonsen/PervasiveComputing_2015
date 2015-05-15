@@ -8,6 +8,7 @@ import android.os.IBinder;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import dk.itu.spct.itucontextphone.io.Response;
 import dk.itu.spct.itucontextphone.model.ContextEntity;
 import dk.itu.spct.itucontextphone.model.ContextEntityList;
 import dk.itu.spct.itucontextphone.monitor.ContextMonitor;
