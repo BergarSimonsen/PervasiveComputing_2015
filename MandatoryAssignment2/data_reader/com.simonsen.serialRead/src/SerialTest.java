@@ -35,7 +35,7 @@ public class SerialTest implements SerialPortEventListener {
 	private static String TMP_FILE = TMP_DATA_LOCATION + "outFile.csv";
 	
 	private DataServer dataServer;
-	public static final int SERVER_PORT = 6666;
+	public static final int SERVER_PORT = 8080;
 	
 	public BufferedReader getInput() { return input; };
 
@@ -180,6 +180,15 @@ public class SerialTest implements SerialPortEventListener {
 	
 	private static boolean reading = false;
 	
+	private synchronized void sendGesture(String gesture) {
+		if(dataServer != null) {
+			System.out.println("Sending gesture: " + gesture);
+			dataServer.sendMsg(gesture);
+		} else {
+			System.out.println("Server is null!");
+		}
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		readData();
 		SerialTest st = new SerialTest();
@@ -207,7 +216,9 @@ public class SerialTest implements SerialPortEventListener {
 //				System.out.println("TEST");
 				
 				if(success) {
-					c.classify2(TMP_FILE);
+					String g = c.classify2(TMP_FILE);
+					if(g != null && g.length() > 0)
+						st.sendGesture(g);
 					w.deleteCsvFile(TMP_FILE);
 //					c.classify(TEST_DATA);
 					success = false;

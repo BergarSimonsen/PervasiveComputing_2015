@@ -79,7 +79,8 @@ public class Classifier {
 		}
 	}
 
-	public void classify(String file) {
+	public String classify(String file) {
+		String s = "";
 		try {
 			DataSource ds;
 			Instances in;
@@ -98,15 +99,19 @@ public class Classifier {
 //					System.out.println("||||----- " + in.classAttribute().value(i));
 //					System.out.println(", predicted: " + in.classAttribute().value((int) pred));
 					System.out.println(", predicted: " + trainingInstances.classAttribute().value((int) pred));
+					s = trainingInstances.classAttribute().value((int) pred);
 				}	
+				return s;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("ERROR classify");
 		}
+		return s;
 	}
 	
-	public void classify2(String file) {
+	public String classify2(String file) {
+		String s = "";
 		try {
 			DataSource ds = new DataSource(file);
 //			Instances unlabeled = new Instances(new BufferedReader(new FileReader(file)));
@@ -124,7 +129,9 @@ public class Classifier {
 				double clsLabel = fc.classifyInstance(unlabeled.instance(i));
 				labeled.instance(i).setClassValue(clsLabel);
 				System.out.println(clsLabel + " -> " + trainingInstances.classAttribute().value((int) clsLabel));
+				s = trainingInstances.classAttribute().value((int) clsLabel);
 			}
+			return s;
 			// save labeled data
 //			BufferedWriter writer = new BufferedWriter(	new FileWriter("/some/where/labeled.arff"));
 //			writer.write(labeled.toString());
@@ -134,6 +141,7 @@ public class Classifier {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 		
+		return s;
 	}
 
 //		private void filter() {
